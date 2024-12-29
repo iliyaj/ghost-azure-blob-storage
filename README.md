@@ -13,16 +13,18 @@ These instructions will guide you through installing the Ghost Azure Blob Storag
 
 **2. Clone the Repository:**
 
-   -  Use `git` to clone the repository directly into your Ghost's `content/adapters/storage` directory:
+-  Use `git` to clone the repository directly into your Ghost's `content/adapters/storage` directory:
 
-     ```bash
-     sudo mkdir -p /var/www/ghost/content/adapters/storage # Create the storage folder
-     cd /var/www/ghost/content/adapters/storage # Go to the storage adapter folder
-     sudo git clone https://github.com/iliyaj/ghost-azure-blob-storage.git ghost-azure-blob-storage
-     sudo chown -R ghost:ghost /var/www/ghost/content # Sets correct user for Ghost
-     ```
-       * If you're running on a local machine, you may not need `sudo`.
-       * If `git` is not installed please use your package manager to install it.
+   ```bash
+   sudo mkdir -p /var/www/ghost/content/adapters/storage # Create the storage folder
+   cd /var/www/ghost/content/adapters/storage # Go to the storage adapter folder
+   sudo git clone https://github.com/iliyaj/ghost-azure-blob-storage.git ghost-azure-blob-storage
+   sudo chown -R ghost:ghost /var/www/ghost/content # Sets correct user for Ghost
+   ```
+
+-  If you're running on a local machine, you may not need `sudo`.
+
+-  If `git` is not installed please use your package manager to install it.
 
 **3. Install Node Dependencies**
 
