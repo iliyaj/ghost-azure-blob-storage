@@ -31,7 +31,7 @@ These instructions will guide you through installing the Ghost Azure Blob Storag
 - Navigate to ghost directory
 
   ```bash
-  cd /var/www/ghost
+  cd /var/www/ghost/content/adapters/storage/ghost-azure-blob-storage
   npm install
   ```
 
