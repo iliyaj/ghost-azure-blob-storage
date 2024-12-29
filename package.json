@@ -1,0 +1,33 @@
+{
+  "name": "ghost-azure-blob-storage",
+  "version": "0.0.1",
+  "description": "Store content such as Images, Videos, Audio and files from Ghost CMS in Azure Blob Storage",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iliyaj/ghost-azure-blob-storage"
+  },
+  "keywords": [
+    "ghost",
+    "microsoft",
+    "azure",
+    "storage",
+    "adapter",
+    "plugin",
+    "blog"
+  ],
+  "author": "Iliya Jokic",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/iliyaj/ghost-azure-blob-storage/issues"
+  },
+  "homepage": "",
+  "dependencies": {
+    "@azure/storage-blob": "^12.26.0",
+    "ghost-storage-base": "^0.0.3",
+    "url": "^0.11.4"
+  }
+}
