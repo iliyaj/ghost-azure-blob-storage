@@ -84,29 +84,42 @@ class AzureStorageAdapter extends BaseStorage {
   }
 
   serve() {
-    return async function customServe(req, res) {
-      const fileUrl = req.url.replace('/content/images/', '');
-      const blobServiceClient = BlobServiceClient.fromConnectionString(options.connectionString);
-      const containerClient = blobServiceClient.getContainerClient(options.container);
-      const blobClient = containerClient.getBlobClient(fileUrl);
-
+    return async (req, res) => {
       try {
+        const basePath = '/content/';
+        const fileUrl = req.url.replace(basePath, '');
+  
+        if (fileUrl.includes('..')) {
+          res.status(400).send('Bad Request');
+          return;
+        }
+  
+        const containerClient = this.getContainerClient();
+        const blobClient = containerClient.getBlobClient(fileUrl);
+  
         if (!(await blobClient.exists())) {
           res.status(404).send('File not found');
           return;
         }
-
-        const downloadBlockBlobResponse = await blobClient.download();
-        const contentType = downloadBlockBlobResponse.contentType || 'application/octet-stream';
-
+  
+        const properties = await blobClient.getProperties();
+        const contentType = mime.getType(fileUrl) || 'application/octet-stream';
+  
         res.writeHead(200, {
           'Content-Type': contentType,
-          'Content-Length': downloadBlockBlobResponse.contentLength,
-          'Accept-Ranges': 'bytes'
+          'Content-Length': properties.contentLength,
+          'Cache-Control': 'public, max-age=31536000',
+          'Accept-Ranges': 'bytes',
         });
-
-        downloadBlockBlobResponse.readableStreamBody.pipe(res);
+  
+        const downloadResponse = await blobClient.download();
+        downloadResponse.readableStreamBody.pipe(res).on('error', (streamError) => {
+          console.error('Stream error:', streamError);
+          res.status(500).send('Internal Server Error');
+        });
+  
       } catch (error) {
+        console.error('Error serving file:', error);
         res.status(500).send('Internal Server Error');
       }
     };
@@ -116,14 +129,13 @@ class AzureStorageAdapter extends BaseStorage {
 
   async read(options) {
     try {
-      const request = require('request-promise-native');
-      const data = await request({
-        method: 'GET',
-        uri: options.path,
-        encoding: null,
-      });
-      return data;
+      const response = await fetch(options.path);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.buffer();
     } catch (error) {
+      console.error(error)
       throw new Error('Cannot download image ' + options.path);
     }
   }
