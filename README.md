@@ -41,7 +41,7 @@ These instructions will guide you through installing the Ghost Azure Blob Storag
 
   ```bash
   cd /var/www/ghost/content/adapters/storage/ghost-azure-blob-storage
-  git pull origin main
+  sudo -u ghost git pull origin main
   ```
 
 
