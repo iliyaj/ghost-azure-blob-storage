@@ -22,7 +22,7 @@ class AzureStorageAdapter extends BaseStorage {
       const blobPath = pathName.replace(/^\/.+?\//, '');
       return blobPath;
     } catch (error) {
-      throw new Error('Invalid URL format');
+      throw new Error(`Invalid URL format: ${error.message}`);
     }
   }
 
@@ -34,6 +34,7 @@ class AzureStorageAdapter extends BaseStorage {
       const exists = await blobClient.exists();
       return exists;
     } catch (error) {
+      console.error(`Exists check failed: ${error.message}`);
       return false;
     }
   }
@@ -80,7 +81,8 @@ class AzureStorageAdapter extends BaseStorage {
         return finalUrl;
       }
     } catch (error) {
-      throw new Error('Error uploading file: ' + error.message);
+      console.error(`Error during file upload: ${error.message}`);
+      throw new Error(`Error uploading file ${image.name}: ${error.message}`);
     }
   }
 
@@ -135,6 +137,7 @@ class AzureStorageAdapter extends BaseStorage {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.buffer();
+      return data;
     } catch (error) {
       console.error(error)
       throw new Error('Cannot download image ' + options.path);
