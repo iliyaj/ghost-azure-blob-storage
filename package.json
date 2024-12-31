@@ -28,6 +28,7 @@
   "dependencies": {
     "@azure/storage-blob": "^12.26.0",
     "ghost-storage-base": "^0.0.3",
-    "url": "^0.11.4"
+    "url": "^0.11.4",
+    "mime-types":"2.1.35"
   }
 }

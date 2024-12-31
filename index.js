@@ -1,5 +1,6 @@
 'use strict';
 const BaseStorage = require('ghost-storage-base');
+const mime = require('mime-types');
 const { BlobServiceClient } = require('@azure/storage-blob');
 const { URL } = require('url');
 
@@ -103,7 +104,7 @@ class AzureStorageAdapter extends BaseStorage {
         }
   
         const properties = await blobClient.getProperties();
-        const contentType = mime.getType(fileUrl) || 'application/octet-stream';
+        const contentType = mime.lookup(fileUrl) || 'application/octet-stream';
   
         res.writeHead(200, {
           'Content-Type': contentType,
