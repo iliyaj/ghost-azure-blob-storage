@@ -107,4 +107,4 @@ These instructions will guide you through installing the Ghost Azure Blob Storag
 
 ## License
 
-Released under the [MIT license](https://github.com/muzix/ghost-s3/blob/master/LICENSE).
+Released under the [MIT license](https://github.com/iliyaj/ghost-azure-blob-storage).

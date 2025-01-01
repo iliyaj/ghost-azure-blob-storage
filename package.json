@@ -24,7 +24,7 @@
   "bugs": {
     "url": "https://github.com/iliyaj/ghost-azure-blob-storage/issues"
   },
-  "homepage": "",
+  "homepage": "https://github.com/iliyaj/ghost-azure-blob-storage",
   "dependencies": {
     "@azure/storage-blob": "^12.26.0",
     "ghost-storage-base": "^0.0.3",

@@ -128,7 +128,10 @@ class AzureStorageAdapter extends BaseStorage {
     };
   }
 
-  delete() { }
+  delete() {
+  // Ghost CMS does not currently require a delete function for storage adapters.
+  // This method is intentionally left unimplemented.
+}
 
   async read(options) {
     try {
