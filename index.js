@@ -2,7 +2,6 @@
 const BaseStorage = require('ghost-storage-base');
 const mime = require('mime-types');
 const { BlobServiceClient } = require('@azure/storage-blob');
-const { URL } = require('url');
 
 let options = {};
 
@@ -22,7 +21,7 @@ class AzureStorageAdapter extends BaseStorage {
       const blobPath = pathName.replace(/^\/.+?\//, '');
       return blobPath;
     } catch (error) {
-      throw new Error(`Invalid URL format: ${error.message}`);
+      throw new Error(`Error parsing URL "${urlString}": ${error.message}`);
     }
   }
 
@@ -31,10 +30,9 @@ class AzureStorageAdapter extends BaseStorage {
       const blobServiceClient = BlobServiceClient.fromConnectionString(options.connectionString);
       const containerClient = blobServiceClient.getContainerClient(options.container);
       const blobClient = containerClient.getBlobClient(filename);
-      const exists = await blobClient.exists();
-      return exists;
+      return await blobClient.exists();
     } catch (error) {
-      console.error(`Exists check failed: ${error.message}`);
+      console.error(`Error checking if file "${filename}" exists: ${error.message}`);
       return false;
     }
   }
@@ -81,69 +79,69 @@ class AzureStorageAdapter extends BaseStorage {
         return finalUrl;
       }
     } catch (error) {
-      console.error(`Error during file upload: ${error.message}`);
-      throw new Error(`Error uploading file ${image.name}: ${error.message}`);
+      console.error(`Error during file upload of "${image.name}": ${error.message}`);
+      throw new Error(`Error uploading file "${image.name}": ${error.message}`);
     }
   }
+
 
   serve() {
     return async (req, res) => {
       try {
         const basePath = '/content/';
         const fileUrl = req.url.replace(basePath, '');
-  
+
         if (fileUrl.includes('..')) {
-          res.status(400).send('Bad Request');
+          res.status(400).send('Bad Request: Invalid file path');
           return;
         }
-  
+
         const containerClient = this.getContainerClient();
         const blobClient = containerClient.getBlobClient(fileUrl);
-  
+
         if (!(await blobClient.exists())) {
-          res.status(404).send('File not found');
+          res.status(404).send(`File "${fileUrl}" not found`);
           return;
         }
-  
+
         const properties = await blobClient.getProperties();
         const contentType = mime.lookup(fileUrl) || 'application/octet-stream';
-  
+
         res.writeHead(200, {
           'Content-Type': contentType,
           'Content-Length': properties.contentLength,
           'Cache-Control': 'public, max-age=31536000',
           'Accept-Ranges': 'bytes',
         });
-  
+
         const downloadResponse = await blobClient.download();
         downloadResponse.readableStreamBody.pipe(res).on('error', (streamError) => {
-          console.error('Stream error:', streamError);
+          console.error(`Error streaming file "${fileUrl}": ${streamError.message}`);
           res.status(500).send('Internal Server Error');
         });
-  
       } catch (error) {
-        console.error('Error serving file:', error);
+        console.error(`Error serving file "${req.url}": ${error.message}`);
         res.status(500).send('Internal Server Error');
       }
     };
   }
 
   delete() {
-  // Ghost CMS does not currently require a delete function for storage adapters.
-  // This method is intentionally left unimplemented.
-}
+    // Ghost CMS does not currently require a delete function for storage adapters.
+    // This method is intentionally left unimplemented.
+  }
 
   async read(options) {
     try {
       const response = await fetch(options.path);
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error while fetching "${options.path}": status ${response.status}`);
       }
       const data = await response.buffer();
       return data;
     } catch (error) {
-      console.error(error)
-      throw new Error('Cannot download image ' + options.path);
+      console.error(`Error reading file "${options.path}": ${error.message}`);
+      throw new Error(`Cannot download image "${options.path}": ${error.message}`);
     }
   }
 }
